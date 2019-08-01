@@ -1,5 +1,6 @@
 # Word2Vec_C
 **The English can refer to <a href="https://github.com/Link-Li/Word2Vec_C" traget="_blank">README</a>**
+
 **这个代码主要参考了:**
 
 **<a href="https://github.com/dav/word2vec" target="_blank">dav/word2vec</a>**

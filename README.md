@@ -1,5 +1,6 @@
 # Word2Vec_C
 **中文版可以参考<a href="https://github.com/Link-Li/Word2Vec_C/blob/master/README-chinese.md" target="_blank">README-chinese</a>**
+
 **This code is mainly referenced:**
 
 **<a href="https://github.com/dav/word2vec" target="_blank">dav/word2vec</a>**
