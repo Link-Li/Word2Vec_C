@@ -409,6 +409,7 @@ void LearnVocabFromTrainFile()
     {
         printf("Vocab size: %lld\n", vocab_size);
         printf("Words in train file: %lld\n", train_words);
+        printf("%lldK%c\n", train_words / 1000, 13);
     }
     // 该函数返回位置标识符的当前值,这里因为是读取文件到了结尾，相当于返回了文件的大小，单位是字节
     file_size = ftell(fin);
@@ -522,11 +523,14 @@ void InitNet()
     //对syn0中每个词对应的词向量进行初始化
     // 生产伪随机数，这里和C++的内部实现类似，但是这里的随机数种子一直都是1，没有改变而已
     // 参考 https://www.cnblogs.com/xkfz007/archive/2012/08/25/2656893.html
+    // 这个代码中的所有的随机变量生产的数据的范围都是[0, 1],这里是因为减了一个0.5，除了一个layer1_size
     for (a = 0; a < vocab_size; a++)
         for (b = 0; b < layer1_size; b++)
         {
             next_random = next_random * (unsigned long long)25214903917 + 11;
             syn0[a * layer1_size + b] = (((next_random & 0xFFFF) / (real)65536) - 0.5) / layer1_size;
+            // double p = (((next_random & 0xFFFF) / (real)65536) - 0.5);
+            // int pp = 1;
         }
     CreateBinaryTree();
 }
@@ -569,9 +573,9 @@ void *TrainModelThread(void *id)
                 // CLOCKS_PER_SEC是标准c的time.h头函数中宏定义的一个常数，
                 // 表示一秒钟内CPU运行的时钟周期数，用于将clock()函数的结果转化为以秒为单位的量，
                 // 但是这个量的具体值是与操作系统相关的。
-                printf("%cAlpha: %f  Progress: %.2f%%  Words/thread/sec: %.2fk  ", 13, alpha,
+                printf("%cAlpha: %f  Progress: %.2f%%  Words/thread/sec: %.2fk  Word_count_actual: %ld", 13, alpha,
                        word_count_actual / (real)(iter * train_words + 1) * 100,
-                       word_count_actual / (((real)(now - start + 1) / (real)CLOCKS_PER_SEC) * 1000));
+                       word_count_actual / (((real)(now - start + 1) / (real)CLOCKS_PER_SEC) * 1000), word_count_actual);
                 fflush(stdout);
             }
             alpha = starting_alpha * (1 - word_count_actual / (real)(iter * train_words + 1));
@@ -1038,7 +1042,7 @@ int main(int argc, char **argv)
         sample = 1e-4;
         num_threads = 1;
         binary = 1;
-        iter = 1;
+        iter = 15;
         // return 0;
     }
     else
@@ -1117,6 +1121,7 @@ int main(int argc, char **argv)
     expTable = (real *)malloc((EXP_TABLE_SIZE + 1) * sizeof(real));
     for (i = 0; i < EXP_TABLE_SIZE; i++)
     {
+        float a = (i / (real)EXP_TABLE_SIZE * 2 - 1) * MAX_EXP;
         expTable[i] = exp((i / (real)EXP_TABLE_SIZE * 2 - 1) * MAX_EXP); // Precompute the exp() table
         expTable[i] = expTable[i] / (expTable[i] + 1);                   // Precompute f(x) = x / (x + 1)
     }
