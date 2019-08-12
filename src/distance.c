@@ -11,6 +11,9 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
+// 这里实际上使用的是余弦向量计算的，并不是作者自己写的所谓的余弦距离，应该是笔误了
+// 计算的公式是：cos(A, B) = [A/sqrt(A^2)]*[B/sqrt(B^2)]，也就是这里作者是分开对A和B进行计算的，
+// 
 
 #include <stdio.h>
 #include <string.h>
@@ -40,7 +43,7 @@ int main(int argc, char **argv)
   if (argc < 2)
   {
     printf("Usage: ./distance <FILE>\nwhere FILE contains word projections in the BINARY FORMAT\n");
-    strcpy(file_name, "data/text8-vector-hs-cbow.bin");
+    strcpy(file_name, "data/text8-vector-hs-cbow-2.bin");
     // return 0;
   }
   else
@@ -66,6 +69,7 @@ int main(int argc, char **argv)
            (long long)words * size * sizeof(float) / 1048576, words, size);
     return -1;
   }
+  // 从文件中读取单词和单词对应的词向量
   for (b = 0; b < words; b++)
   {
     a = 0;
@@ -88,6 +92,7 @@ int main(int argc, char **argv)
       M[a + b * size] /= len;
   }
   fclose(f);
+
   while (1)
   {
     for (a = 0; a < N; a++)
